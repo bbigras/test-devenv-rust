@@ -6,6 +6,8 @@
       url = "file+file:///dev/null";
       flake = false;
     };
+    fenix.url = "github:nix-community/fenix";
+    fenix.inputs = { nixpkgs.follows = "nixpkgs"; };
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:cachix/devenv-nixpkgs/rolling";
     devenv.url = "github:cachix/devenv";
@@ -31,9 +33,6 @@
         # module parameters provide easy access to attributes of the same
         # system.
 
-        # Equivalent to  inputs'.nixpkgs.legacyPackages.hello;
-        packages.default = pkgs.hello;
-
         devenv.shells.default = {
           devenv.root =
             let
@@ -49,14 +48,12 @@
             # ./devenv-foo.nix
           ];
 
-          # https://devenv.sh/reference/options/
-          packages = [ config.packages.default ];
+          languages.rust.channel = "nightly";
+          languages.rust.enable = true;
 
-          enterShell = ''
-            hello
-          '';
-
-          processes.hello.exec = "hello";
+          env = {
+            RUST_PKG = "${config.languages.rust.package}";
+          };
         };
 
       };
